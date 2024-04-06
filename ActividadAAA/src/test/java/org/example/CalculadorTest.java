@@ -1,5 +1,6 @@
 package org.example;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -9,10 +10,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CalculadorTest {
     private Calculador calculador;
+
+    @BeforeEach
+    public void setUp(){
+        calculador=new Calculador();
+    }
     @Test
     public void testSum_PositiveNumbers_ShouldReturnCorrectSum() {
         // Arrange
-        calculador = new Calculador();
         int numeroA = 10;
         int numeroB = 5;
 
@@ -24,7 +29,6 @@ class CalculadorTest {
     }
     @Test
     public void testSum_NegativeNumbers_ShouldCorrectSum(){
-        calculador = new Calculador();
         int numeroA= -63;
         int numeroB=50;
 
@@ -39,7 +43,6 @@ class CalculadorTest {
         "199999999,99999999,299999998"
     })
     public void testSum_BigNumber_ShouldCorrectSum(int numeroA, int numeroB,int suma_esperada){
-        calculador= new Calculador();
         int suma=calculador.sumar(numeroA,numeroB);
         assertThat(suma).isEqualTo(suma_esperada);
     }
@@ -47,7 +50,6 @@ class CalculadorTest {
     public void testSum_NegativeandPositiveNumbers_ShouldRetunrCorrectSum(){
         int numA=44;
         int numB=-44;
-        calculador= new Calculador();
         int suma=calculador.sumar(numA,numB);
         assertThat(suma).isEqualTo(0);
     }
@@ -56,7 +58,6 @@ class CalculadorTest {
     @Test
     public void testResta_PositiveNumbers_ShouldReturnCorrectSum() {
         // Arrange
-        calculador = new Calculador();
         int numeroA = 10;
         int numeroB = 5;
 
@@ -68,7 +69,6 @@ class CalculadorTest {
     }
     @Test
     public void testResta_NegativeNumbers_ShouldCorrectSum(){
-        calculador = new Calculador();
         int numeroA= -70;
         int numeroB=-60;
         int resultado= calculador.restar(numeroA,numeroB);
@@ -83,7 +83,6 @@ class CalculadorTest {
             "199999999,-8888888,208888887"
     })
     public void testResta_BigNumber_ShouldCorrectSum(int numeroA, int numeroB,int resta_esperada){
-        calculador= new Calculador();
         int resta=calculador.restar(numeroA,numeroB);
         assertThat(resta).isEqualTo(resta_esperada);
     }
@@ -91,8 +90,46 @@ class CalculadorTest {
     public void testResta_NegativeandPositiveNumbers_ShouldReturnCorrectResta(){
         int numA=-54;
         int numB=-54;
-        calculador= new Calculador();
         int suma=calculador.restar(numA,numB);
         assertThat(suma).isEqualTo(0);
     }
+
+    @ParameterizedTest
+    @CsvSource({
+        "99999,16112,1611183888",
+        "13443,99999,1344286557",
+        "23434,88888,2083001392"
+    })
+    public void testMultiplicacion_BigNumbers_ShouldReturnCorrectMultiplicacion(int numeroA,int numeroB,int resultado){
+        int multi=calculador.multiplicacion(numeroA,numeroB);
+        assertThat(multi).isEqualTo(resultado);
+    }
+    @Test
+    public void testMultiplicacion_numbermultipliedbyzero(){
+        int numeroA= 0;
+        int numeroB=23434;
+        int multi= calculador.multiplicacion(numeroA,numeroB);
+        assertThat(multi).isEqualTo(0);
+    }
+    @Test
+    public void testdivision_divisionbyzero(){
+        int numeroA=255;
+        int numeroB=0;
+        assertThrows(ArithmeticException.class,()->calculador.division(numeroA,numeroB));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 10000, 0.0001",   // 1 / 10000 = 0.0001
+            "10, 1000, 0.01",     // 10 / 1000 = 0.01
+            "100, 100, 1.0",      // 100 / 100 = 1.0
+            "1000, 10, 100.0",    // 1000 / 10 = 100.0
+            "2, 3, 0.6667"        // 2 / 3 = 0.6667
+    })
+    public void testDivisionConNumerosChiquitos(int numeroA, int numeroB, double resultadoEsperado) {
+        double MARGEN_ERROR = 0.0001;
+        double resultado = calculador.division(numeroA, numeroB);
+        assertEquals(resultadoEsperado, resultado, MARGEN_ERROR);
+    }
+
 }
